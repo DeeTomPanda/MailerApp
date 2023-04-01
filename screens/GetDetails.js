@@ -25,42 +25,10 @@ import {
 } from 'react-redux'
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import { update } from './../reducers/rootReducer'
+import Fields from './Fields'
 import styles from './../styles/App.scss'
 
-const Fields=({formik})=>{
-	//The 4 fields and its config
-
-	const fields=['Name','Email','Message','Contact']
-
-	return(<>
-		<KeyboardAwareScrollView enableOnAndroid={true} enableAutomaticScroll={false} 
-		 extraScrollHeight={200} extraHeight={80}>
-		<VStack mt='10' w='100%' justifyContent='space-evenly'>
-		  {
-		   fields.map((v,i)=>{
-			  return(
-				  <Box p='1' w='100%' h='35%' my='10' key={i}>
-			  	     <Text style={styles.text}>{v}</Text>
-				     {v==="Message"?
-				     (<TextArea value={formik.values[v]} color='#fff' fontWeight='bold' fontSize='15' 
-				       h='55%'  w='90%' onChangeText={(ch)=>formik.setFieldValue(v,ch)}/>):
-			             (<Input value={formik.values[v]} color='#fff' fontWeight='bold' fontSize='15' 
-				        keyboardType={v==="Contact"?"numeric":"default"} 
-					style={styles.placeholder} w='90%' 
-				       onChangeText={(ch)=>formik.setFieldValue(String(v),ch)}
-				       onBlur={()=>formik.setFieldTouched(v,true)}
-				       variant='underlined' placeholder={v} placeholderTextColor='#fff'
-				       focusOutlineColor='#0b2477'/>)}
-				     {formik.touched[v] && formik.errors[v]?
-				     (<Text style={{color:'#fff',fontWeight:'bold'}}>{formik.errors[v]}</Text>):null}
-				  </Box>
-			  	)
-		  	})
-		  }
-		</VStack>
-		</KeyboardAwareScrollView>
-		</>)
-}
+console.log(API)
 
 const GetDetails=()=>{
 
@@ -76,7 +44,7 @@ const GetDetails=()=>{
 		Contact:Yup.string().min(10).max(10).required()})
 
 	const onSubmit=(data)=>{
-		axios.post('http://10.0.2.2:8005/getUserDetails',data)
+		axios.post(`${API}`,data)
 		.then((res)=>console.log(res.data),(err)=>console.log(err))
 		dispatch(update(data))}	
 
@@ -98,8 +66,13 @@ const GetDetails=()=>{
 		         <VStack m='auto' justifyContent='space-evenly' pt='-2'  h='70%' w='100%'>
 		            <Fields formik={formik}/>
 		         </VStack>
-		         <Button onPress={()=>formik.resetForm({values:{
-				 Email:'',Message:'',Name:'',Contact:''}})} 
+		         <Button onPress={()=>{
+				 formik.resetForm({
+				 values:{
+				    Email:'',Message:'',Name:'',Contact:''}
+			 	})
+				Keyboard.dismiss()}
+			 } 
 				bg='#FACC15' w='30%' 
 		          _text={{color:'black'}}>
 		            Reset
